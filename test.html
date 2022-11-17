@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS v5.2.1 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <link rel="stylesheet" href="./fontawesome/css/all.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.1.3/axios.min.js" integrity="sha512-0qU9M9jfqPw6FKkPafM3gy2CBAvUWnYVOfNPDYKVuRTel1PrciTj+a9P3loJB+j0QmN2Y0JYQmkBBS8W+mbezg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+      a{
+        display: block;
+      }
+      header{
+        position: fixed;
+        width: 100%;
+        z-index: 10;
+      }
+      .navigate{
+        background: #16136f;
+        display: grid;
+        grid-template-columns: 1fr 80%;
+      }
+      .search_area{
+        display: flex;
+        justify-content: end;
+      }
+      .search_bar{
+        width: 220px;
+      }
+      .search_btn{
+        cursor: pointer;
+      }
+      main{
+        padding-top: 60px;
+      }
+      .carousel-item{
+        height: 300px;
+      }
+      .carousel-item img{
+        object-fit: cover;
+      }
+      @media screen and (max-width: 1400px){
+        .carousel-item{
+          height: 200px;
+        }
+      }
+    </style>
+</head>
+
+<body>
+    <header class="mb-2">
+      <nav class="navigate">
+        <!-- 暫時隱藏<a class="invisible">標籤 -->
+        <a href="#" role="button" class="ms-2 invisible" style="color:#ccc; font-size: 2rem;">
+          <i class="fas fa-cog"></i>
+        </a>
+        <div class="search_area me-2">
+          <div class="search_area_sm">
+            <input type="search" class="search_bar mt-2" placeholder="搜尋商品" value="">
+          </div>
+          <div class="search_btn px-2" style="color:#ccc; font-size: 2rem;">
+            <i class="fas fa-search"></i>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main class="container-fluid">
+        <div class="carousel_flex row">
+
+        </div>
+    </main>
+    <footer>
+
+    </footer>
+    <!-- Bootstrap JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+        integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
+        integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous">
+    </script>
+    <script>
+        const carouselFlex = document.querySelector('.carousel_flex');
+        const searchBar = document.querySelector('.search_bar');
+        const searchBtn = document.querySelector('.search_btn');
+        const allData = []; // 由axios傳回，全部的資料
+        let dataSelected = []; // 篩選 全部的資料
+        let contentArr = []; // 篩選後的資料，加上樣版字面、html標籤，準備渲染到畫面上
+
+        //迴圈記算器
+        let loopIndex = 0;
+        let times = 12;
+
+        function dataToContent(){
+          contentArr = dataSelected.map((value,key)=>{
+            return `<div id="carouselExampleIndicators${key}" class="carousel slide col-6 col-md-3 mb-3" data-bs-ride="false" data-bs-interval="false">
+                <div class="carousel-inner">
+                  <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#carouselExampleIndicators${key}" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#carouselExampleIndicators${key}" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#carouselExampleIndicators${key}" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                  </div>
+                  <div class="carousel-item active">
+                    <img src=${`${value.url[0]}` || `https://picsum.photos/${ 200 + key}`} class="d-block w-100 h-100" alt="...">
+                  </div>
+                  <div class="carousel-item">
+                    <img src=${`${value.url[1]}` || `https://picsum.photos/${ 201 + key}`} class="d-block w-100 h-100" alt="...">
+                  </div>
+                  <div class="carousel-item">
+                    <img src=${`${value.url[2]}` || `https://picsum.photos/${ 202 + key}`} class="d-block w-100 h-100" alt="...">
+                  </div>
+                  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators${key}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators${key}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </button>
+                </div>
+                <h3 class="text-center text-truncate">${value.product_name}</h3>
+                <div class="d-flex justify-content-between">
+                  <div class="h5 ms-2">NT$</div>
+                  <div class="h5 me-2">${value.price}</div>
+                </div>
+                <button class="btn btn-primary d-block w-100">加入購物車</button>
+              </div>
+            `;
+          })
+        }
+
+        // 載入頁面
+        addEventListener('load',()=>{
+          axios.get('./products.json',{headers: {'Access-Control-Allow-Origin': '*',}})
+          .then(res => {
+            allData.push(...res.data[2].data);
+            dataSelected = [...JSON.parse(JSON.stringify(allData))];
+            dataToContent();
+          })
+          .then(() => {
+            while( loopIndex < times ){
+              carouselFlex.innerHTML += contentArr[loopIndex];
+              loopIndex++;
+            }
+          })
+        })
+          
+          
+        // 捲動事件
+        window.addEventListener('scroll',()=>{
+            let x = document.documentElement.scrollHeight
+            let y = window.pageYOffset
+            let z = document.documentElement.clientHeight
+
+            // 捲動快要至底部時，觸發if判斷
+            if( x-y-z <= 10 ){
+              times >= contentArr.length ? times = contentArr.length : times += 12;
+              while( loopIndex < times && times <= contentArr.length){
+              carouselFlex.innerHTML += contentArr[loopIndex];
+              loopIndex++;
+              }
+            }            
+        })
+
+        // 搜尋功能
+        searchBtn.addEventListener('click',()=>{
+          carouselFlex.innerHTML = '';
+          dataSelected = allData.filter((value,key)=>{
+            return value.product_name.match(searchBar.value);
+          })
+          dataToContent();
+          loopIndex = 0;
+          contentArr.length >= 12 ? times = 12 : times = contentArr.length ;
+          while( loopIndex < times && times <= contentArr.length){
+            carouselFlex.innerHTML += contentArr[loopIndex];
+            loopIndex++;
+          }
+        })
+    </script>
+</body>
+
+</html>
