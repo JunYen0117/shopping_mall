@@ -1,3 +1,5 @@
+export default
+
 [
     {"type":"header","version":"5.1.3","comment":"Export to JSON plugin for PHPMyAdmin"},
     {"type":"database","name":"測試"},

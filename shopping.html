@@ -84,11 +84,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
         integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous">
     </script>
-    <script>
+    <script type="module">
+        import products from './products.js'
+
         const carouselFlex = document.querySelector('.carousel_flex');
         const searchBar = document.querySelector('.search_bar');
         const searchBtn = document.querySelector('.search_btn');
-        const allData = []; // 由axios傳回，全部的資料
+        const allData = []; // 全部的資料
         let dataSelected = []; // 篩選 全部的資料
         let contentArr = []; // 篩選後的資料，加上樣版字面、html標籤，準備渲染到畫面上
 
@@ -136,20 +138,15 @@
 
         // 載入頁面
         addEventListener('load',()=>{
-          axios.get('./products.json',{headers: {'Access-Control-Allow-Origin': '*',}})
-          .then(res => {
-            allData.push(...res.data[2].data);
-            dataSelected = [...JSON.parse(JSON.stringify(allData))];
+            allData.push(...products[2].data);
+            dataSelected = JSON.parse(JSON.stringify(allData));
             dataToContent();
-          })
-          .then(() => {
             while( loopIndex < times ){
               carouselFlex.innerHTML += contentArr[loopIndex];
               loopIndex++;
             }
-          })
+
         })
-          
           
         // 捲動事件
         window.addEventListener('scroll',()=>{
